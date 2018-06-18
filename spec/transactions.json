@@ -1,0 +1,353 @@
+{
+  "common_fields": {
+    "name": "Common Fields",
+    "description": "Every transaction has the same set of common fields, plus additional fields based on the transaction type. Field names are case-sensitive.",
+    "reference": "https://developers.ripple.com/transaction-common-fields.html",
+    "fields": [
+      {
+        "name": "Account",
+        "json_type": "String",
+        "internal_type": "Account",
+        "required": true,
+        "description": "The unique address of the account that initiated the transaction."
+      },
+      {
+        "name": "TransactionType",
+        "json_type": "String",
+        "internal_type": "UInt16",
+        "required": true,
+        "description": "The type of transaction. ",
+        "validation": {
+          "allowed": [
+            "AccountSet",
+            "CheckCancel",
+            "CheckCash",
+            "CheckCreate",
+            "EscrowCancel",
+            "EscrowCreate",
+            "EscrowFinish",
+            "OfferCancel",
+            "OfferCreate",
+            "Payment",
+            "PaymentChannelClaim",
+            "PaymentChannelCreate",
+            "PaymentChannelFund",
+            "SetRegularKey",
+            "SignerListSet",
+            "TrustSet"
+          ]
+        }
+      },
+      {
+        "name": "Fee",
+        "json_type": "String",
+        "internal_type": "Amount",
+        "required": true,
+        "auto_fillable": true,
+        "description": "Integer amount of XRP, in drops, to be destroyed as a cost for distributing this transaction to the network. Some transaction types have different minimum requirements."
+      },
+      {
+        "name": "Sequence",
+        "json_type": "Unsigned Integer",
+        "internal_type": "UInt32",
+        "required": true,
+        "auto_fillable": true,
+        "description": "The sequence number, relative to the initiating account, of this transaction. A transaction is only valid if the Sequence number is exactly 1 greater than the previous transaction from the same account."
+      },
+      {
+        "name": "AccountTxnID",
+        "json_type": "String",
+        "internal_type": "Hash256",
+        "required": false,
+        "description": "Hash value identifying another transaction. If provided, this transaction is only valid if the sending account's previously-sent transaction matches the provided hash.",
+        "reference": "https://developers.ripple.com/transaction-common-fields.html#accounttxnid"
+      },
+      {
+        "name": "Flags",
+        "json_type": "Unsigned Integer",
+        "internal_type": "UInt32",
+        "required": false,
+        "description": "Set of bit-flags for this transaction.",
+        "reference": "https://developers.ripple.com/transaction-common-fields.html#flags-field"
+      },
+      {
+        "name": "LastLedgerSequence",
+        "json_type": "Number",
+        "internal_type": "UInt32",
+        "required": false,
+        "description": "Highest ledger index this transaction can appear in. Specifying this field places a strict upper limit on how long the transaction can wait to be validated or rejected."
+      },
+      {
+        "name": "Memos",
+        "json_type": "Array of Objects",
+        "internal_type": "Array",
+        "required": false,
+        "description": "Additional arbitrary information used to identify this transaction.",
+        "reference": "https://developers.ripple.com/transaction-common-fields.html#memos-field"
+      },
+      {
+        "name": "Signers",
+        "json_type": "Array",
+        "internal_type": "Array",
+        "required": false,
+        "description": "Array of objects that represent a multi-signature which authorizes this transaction.",
+        "reference": "https://developers.ripple.com/transaction-common-fields.html#signers-field"
+      },
+      {
+        "name": "SourceTag",
+        "json_type": "Unsigned Integer",
+        "internal_type": "UInt32",
+        "required": false,
+        "description": "Arbitrary integer used to identify the reason for this payment, or a sender on whose behalf this transaction is made. Conventionally, a refund should specify the initial payment's SourceTag as the refund payment's DestinationTag."
+      },
+      {
+        "name": "SigningPubKey",
+        "json_type": "String",
+        "internal_type": "PubKey",
+        "required": false,
+        "description": "(Automatically added when signing) Hex representation of the public key that corresponds to the private key used to sign this transaction. If an empty string, indicates a multi-signature is present in the Signers field instead."
+      },
+      {
+        "name": "TxnSignature",
+        "json_type": "String",
+        "internal_type": "VariableLength",
+        "required": false,
+        "description": "(Automatically added when signing) The signature that verifies this transaction as originating from the account it says it is from."
+      }
+    ]
+  },
+  "types": [
+    {
+      "name": "AccountSet",
+      "description": "An AccountSet transaction modifies the properties of an account in the XRP Ledger.",
+      "reference": "https://developers.ripple.com/accountset.html",
+      "fields": [
+        {
+          "name": "ClearFlag",
+          "json_type": "Unsigned Integer",
+          "internal_type": "UInt32",
+          "required": false,
+          "description": "Unique identifier of a flag to disable for this account.",
+          "reference": "https://developers.ripple.com/accountset.html#accountset-flags"
+        },
+        {
+          "name": "Domain",
+          "json_type": "String",
+          "internal_type": "VariableLength",
+          "required": false,
+          "description": "The domain that owns this account, as a string of hex representing the ASCII for the domain in lowercase.",
+          "reference": "https://developers.ripple.com/accountset.html#domain"
+        },
+        {
+          "name": "EmailHash",
+          "json_type": "String",
+          "internal_type": "Hash128",
+          "required": false,
+          "description": "Hash of an email address to be used for generating an avatar image. Conventionally, clients use Gravatar to display this image."
+        },
+        {
+          "name": "MessageKey",
+          "json_type": "String",
+          "internal_type": "PubKey",
+          "required": false,
+          "description": "Public key for sending encrypted messages to this account."
+        },
+        {
+          "name": "SetFlag",
+          "json_type": "Unsigned Integer",
+          "internal_type": "UInt32",
+          "required": false,
+          "description": "Integer flag to enable for this account.",
+          "reference": "https://developers.ripple.com/accountset.html#accountset-flags"
+        },
+        {
+          "name": "TransferRate",
+          "json_type": "Unsigned Integer",
+          "internal_type": "UInt32",
+          "required": false,
+          "description": "The fee to charge when users transfer this account's issued currencies, represented as billionths of a unit. Cannot be more than 2000000000 or less than 1000000000, except for the special case 0 meaning no fee.",
+          "reference": "https://developers.ripple.com/accountset.html#transferrate",
+          "validation": {
+            "min": 1000000000,
+            "max": 2000000000,
+            "allow_zero": true
+          }
+        },
+        {
+          "name": "TickSize",
+          "json_type": "Unsigned Integer",
+          "internal_type": "UInt8",
+          "required": false,
+          "description": "Tick size to use for offers involving a currency issued by this address. The exchange rates of those offers is rounded to this many significant digits. Valid values are 3 to 15 inclusive, or 0 to disable. (Requires the TickSize amendment.)",
+          "reference": "https://developers.ripple.com/ticksize.html",
+          "validation": {
+            "min": 3,
+            "max": 15,
+            "allow_zero": true
+          }
+        },
+        {
+          "name": "WalletLocator",
+          "json_type": "String",
+          "internal_type": "Hash256",
+          "required": false,
+          "description": "Not used."
+        },
+        {
+          "name": "TickSize",
+          "json_type": "Unsigned Integer",
+          "internal_type": "UInt8",
+          "required": false,
+          "description": "Not used."
+        }
+      ]
+    },
+    {
+      "name": "CheckCancel",
+      "description": "Cancels an unredeemed Check, removing it from the ledger without sending any money. The source or the destination of the check can cancel a Check at any time using this transaction type. If the Check has expired, any address can cancel it.",
+      "reference": "https://developers.ripple.com/checkcancel.html",
+      "fields": [
+        {
+          "name": "CheckID",
+          "json_type": "String",
+          "internal_type": "Hash256",
+          "required": true,
+          "description": "The ID of the Check ledger object to cancel, as a 64-character hexadecimal string."
+        }
+      ],
+      "error_cases": {
+        "tecNO_ENTRY": {
+          "message": "The CheckID does not exist or is not a check."
+        },
+        "tecNO_PERMISSION": {
+          "message": "The check is not expired and the sender of this transaction is not the source or destination of the check."
+        }
+      }
+    },
+    {
+      "name": "CheckCash",
+      "description": "Attempts to redeem a Check object in the ledger to receive up to the amount authorized by the corresponding CheckCreate transaction. Only the Destination address of a Check can cash it with a CheckCash transaction. Cashing a check this way is similar to executing a Payment initiated by the destination.\\n\\nSince the funds for a check are not guaranteed, redeeming a Check can fail because the sender does not have a high enough balance or because there is not enough liquidity to deliver the funds. If this happens, the Check remains in the ledger and the destination can try to cash it again later, or for a different amount.",
+      "reference": "https://developers.ripple.com/checkcancel.html",
+      "fields": [
+        {
+          "name": "CheckID",
+          "json_type": "String",
+          "internal_type": "Hash256",
+          "required": true,
+          "description": "The ID of the Check ledger object to cancel, as a 64-character hexadecimal string."
+        },
+        {
+          "name": "Amount",
+          "json_type": "Currency Amount",
+          "internal_type": "Amount",
+          "required": false,
+          "description": "Redeem the Check for exactly this amount, if possible. The currency must match that of the SendMax of the corresponding CheckCreate transaction. You must provide either this field or DeliverMin."
+        },
+        {
+          "name": "DeliverMin",
+          "json_type": "Currency Amount",
+          "internal_type": "Amount",
+          "required": false,
+          "description": "Redeem the Check for at least this amount and for as much as possible. The currency must match that of the SendMax of the corresponding CheckCreate transaction. You must provide either this field or Amount.",
+          "validation": {
+            "not_allowed_with": ["amount"]
+          }
+        }
+      ],
+      "validation": {
+        "groups": [
+          {
+            "fields": ["Amount", "DeliverMin"],
+            "exclusive": true,
+            "required": true
+          }
+        ]
+      },
+      "error_cases": {
+        "tecNO_PERMISSION": {
+          "message": "The sender of the transaction must be the Destination of the check."
+        },
+        "tecNO_ENTRY": {
+          "message": "The CheckID does not exist."
+        },
+        "tecEXPIRED": {
+          "message": "The CheckID has already expired."
+        },
+        "tecDST_TAG_NEEDED": {
+          "message": "The check has the RequestDest flag enabled but does not have a Destination tag."
+        },
+        "temMALFORMED": {
+          "message": "The transaction must contain either Amount and DeliverMin, and not both."
+        },
+        "temBAD_CURRENCY": {
+          "message": "The Amount or DeliverMin does not match the currency (and issuer, if not XRP) of the check."
+        }
+      }
+    },
+    {
+      "name": "CheckCreate",
+      "description": "Create a Check object in the ledger, which is a deferred payment that can be cashed by its intended destination. The sender of this transaction is the sender of the Check.",
+      "reference": "https://developers.ripple.com/checkcreate.html",
+      "fields": [
+        {
+          "name": "Destination",
+          "json_type": "String",
+          "internal_type": "Account",
+          "required": true,
+          "description": "The unique address of the account that can cash the Check."
+        },
+        {
+          "name": "SendMax",
+          "json_type": "Currency Amount",
+          "internal_type": "Amount",
+          "required": false,
+          "description": "Maximum amount of source currency the Check is allowed to debit the sender, including transfer fees on non-XRP currencies. The Check can only credit the destination with the same currency (from the same issuer, for non-XRP currencies). For non-XRP amounts, the nested field names MUST be lower-case."
+        },
+        {
+          "name": "DestinationTag",
+          "json_type": "Unsigned Integer",
+          "internal_type": "UInt32",
+          "required": false,
+          "description": "Arbitrary tag that identifies the reason for the Check, or a hosted recipient to pay."
+        },
+        {
+          "name": "Expiration",
+          "json_type": "Unsigned Integer",
+          "internal_type": "UInt32",
+          "required": false,
+          "description": "Time after which the Check is no longer valid, in seconds since the Ripple Epoch."
+        },
+        {
+          "name": "InvoiceID",
+          "json_type": "String",
+          "internal_type": "Hash256",
+          "required": false,
+          "description": "Arbitrary 256-bit hash representing a specific reason or identifier for this Check."
+        }
+      ],
+      "error_cases": {
+        "temREDUNDANT": {
+          "message": "The Destination is the sender of the transaction."
+        },
+        "tecNO_DST": {
+          "message": "The Destination account does not exist in the ledger."
+        },
+        "tecDST_TAG_NEEDED": {
+          "message": "The Destination account has the RequireDest flag enabled but the transaction does not include the DestinationTag field."
+        },
+        "tecFROZEN": {
+          "message": "SendMax specifies an issued currency which is fronzen."
+        },
+        "tecEXPIRED": {
+          "message": "The Expiration of the transaction is in the past."
+        },
+        "tecINSUFFICIENT_RESERVE": {
+          "message": "The sender does not have enough XRP to meet the owner reserve after adding the Check."
+        },
+        "tecDIR_FULL": {
+          "message": "The sender or the destination of the Check cannot own more objects in the ledger."
+        }
+      }
+    }
+  ]
+}
