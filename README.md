@@ -7,13 +7,15 @@ These files can be used by developers to programmatically generate or validate t
 
 ## API
 
-API specification can be loaded from [`api.json`](spec/transactions.json).
+API specification can be loaded from [`spec/api.json`](spec/transactions.json).
 
 ## Transactions
 
 The transaction spec defines transaction types and their field detail.
 
-The transaction specification can be loaded from [`transactions.json`](spec/transactions.json).
+The transaction specification can be loaded from [`spec/transactions.json`](spec/transactions.json).
+
+Some transaction types have a `flag` property. When set, these values can be loaded from [`spec/flags.json`](spec/flags.json).
 
 ## Transaction Type Validation
 
