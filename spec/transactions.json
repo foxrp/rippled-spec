@@ -581,6 +581,211 @@
           "description": "Minimum amount of destination currency this transaction should deliver. Only valid if this is a partial payment. For non-XRP amounts, the nested field names are lower-case."
         }
       ]
+    },
+    {
+      "name": "PaymentChannelClaim",
+      "description": "Claim XRP from a payment channel, adjust the payment channel's expiration, or both. This transaction can be used differently depending on the transaction sender's role in the specified channel.",
+      "reference": "https://developers.ripple.com/paymentchannelclaim.html",
+      "flags": "channel",
+      "fields": [
+        {
+          "name": "Channel",
+          "json_type": "String",
+          "internal_type": "Hash256",
+          "required": true,
+          "description": "The unique ID of the channel, as a 64-character hexadecimal string."
+        },
+        {
+          "name": "Balance",
+          "json_type": "String",
+          "internal_type": "Amount",
+          "required": false,
+          "description": "Total amount of XRP, in drops, delivered by this channel after processing this claim. Required to deliver XRP. Must be more than the total amount delivered by the channel so far, but not greater than the Amount of the signed claim. Must be provided except when closing the channel."
+        },
+        {
+          "name": "Amount",
+          "json_type": "String",
+          "internal_type": "Amount",
+          "required": false,
+          "description": "The amount of XRP, in drops, authorized by the Signature. This must match the amount in the signed message. This is the cumulative amount of XRP that can be dispensed by the channel, including XRP previously redeemed."
+        },
+        {
+          "name": "Signature",
+          "json_type": "String",
+          "internal_type": "VariableLength",
+          "required": false,
+          "description": "The signature of this claim, as hexadecimal. The signed message contains the channel ID and the amount of the claim. Required unless the sender of the transaction is the source address of the channel."
+        },
+        {
+          "name": "PublicKey",
+          "json_type": "String",
+          "internal_type": "PubKey",
+          "required": false,
+          "description": "The public key used for the signature, as hexadecimal. This must match the PublicKey stored in the ledger for the channel. Required unless the sender of the transaction is the source address of the channel and the Signature field is omitted. (The transaction includes the PubKey so that rippled can check the validity of the signature before trying to apply the transaction to the ledger.)"
+        }
+      ]
+    },
+    {
+      "name": "PaymentChannelCreate",
+      "description": "Create a unidirectional channel and fund it with XRP. The address sending this transaction becomes the \"source address\" of the payment channel.",
+      "reference": "https://developers.ripple.com/paymentchannelcreate.html",
+      "fields": [
+        {
+          "name": "Balance",
+          "json_type": "String",
+          "internal_type": "Amount",
+          "required": true,
+          "description": "Amount of XRP, in drops, to deduct from the sender's balance and set aside in this channel. While the channel is open, the XRP can only go to the Destination address. When the channel closes, any unclaimed XRP is returned to the source address's balance."
+        },
+        {
+          "name": "Destination",
+          "json_type": "String",
+          "internal_type": "AccountID",
+          "required": true,
+          "description": "Address to receive XRP claims against this channel. This is also known as the \"destination address\" for the channel. Cannot be the same as the sender (Account)."
+        },
+        {
+          "name": "SettleDelay",
+          "json_type": "Number",
+          "internal_type": "UInt32",
+          "required": false,
+          "description": "Amount of time the source address must wait before closing the channel if it has unclaimed XRP."
+        },
+        {
+          "name": "PublicKey",
+          "json_type": "String",
+          "internal_type": "PubKey",
+          "required": false,
+          "description": "The public key of the key pair the source will use to sign claims against this channel, in hexadecimal. This can be any secp256k1 or Ed25519 public key."
+        },
+        {
+          "name": "CancelAfter",
+          "json_type": "Number",
+          "internal_type": "UInt32",
+          "required": false,
+          "description": "The time, in seconds since the Ripple Epoch, when this channel expires. Any transaction that would modify the channel after this time closes the channel without otherwise affecting it. This value is immutable; the channel can be closed earlier than this time but cannot remain open after this time."
+        },
+        {
+          "name": "DestinationTag",
+          "json_type": "Number",
+          "internal_type": "UInt32",
+          "required": false,
+          "description": "Arbitrary tag to further specify the destination for this payment channel, such as a hosted recipient at the destination address."
+        }
+      ]
+    },
+    {
+      "name": "PaymentChannelFund",
+      "description": "Add additional XRP to an open payment channel, update the expiration time of the channel, or both. Only the source address of the channel can use this transaction. (Transactions from other addresses fail with the error tecNO_PERMISSION.)",
+      "reference": "https://developers.ripple.com/paymentchannelfund.html",
+      "fields": [
+        {
+          "name": "Channel",
+          "json_type": "String",
+          "internal_type": "Hash256",
+          "required": true,
+          "description": "The unique ID of the channel, as a 64-character hexadecimal string."
+        },
+        {
+          "name": "Amount",
+          "json_type": "String",
+          "internal_type": "Amount",
+          "required": true,
+          "description": "mount of XRP, in drops to add to the channel. To set the expiration for a channel without adding more XRP, set this to \"0\"."
+        },
+        {
+          "name": "Expiration",
+          "json_type": "Number",
+          "internal_type": "UInt32",
+          "required": false,
+          "description": "New Expiration time to set for the channel, in seconds since the Ripple Epoch. This must be later than either the current time plus the SettleDelay of the channel, or the existing Expiration of the channel. After the Expiration time, any transaction that would access the channel closes the channel without taking its normal action. Any unspent XRP is returned to the source address when the channel closes. (Expiration is separate from the channel's immutable CancelAfter time.) For more in formation, see the PayChannel ledger object type."
+        }
+      ]
+    },
+    {
+      "name": "SetRegularKey",
+      "description": "A SetRegularKey transaction assigns, changes, or removes the regular key pair associated with an account.\\n\\nYou can protect your account by assigning a regular key pair to it and using it instead of the master key pair to sign transactions whenever possible. If your regular key pair is compromised, but your master key pair is not, you can use a SetRegularKey transaction to regain control of your account.",
+      "reference": "https://developers.ripple.com/setregularkey.html",
+      "fields": [
+        {
+          "name": "RegularKey",
+          "json_type": "String",
+          "internal_type": "AccountID",
+          "required": false,
+          "description": "A base-58-encoded Address that indicates the regular key pair to be assigned to the account. If omitted, removes any existing regular key pair from the account."
+        }
+      ]
+    },
+    {
+      "name": "SignerListSet",
+      "description": "The SignerListSet transaction creates, replaces, or removes a list of signers that can be used to multi-sign a transaction.",
+      "reference": "https://developers.ripple.com/signerlistset.html",
+      "fields": [
+        {
+          "name": "SignerQuorum",
+          "json_type": "Number",
+          "internal_type": "UInt32",
+          "required": true,
+          "description": "A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is greater than or equal to this value. To delete a SignerList, use the value 0."
+        },
+        {
+          "name": "SignerEntries",
+          "json_type": "Array",
+          "internal_type": "Array",
+          "required": false,
+          "description": "(Omitted when deleting) Array of SignerEntry objects, indicating the addresses and weights of signers in this list. A SignerList must have at least 1 member and no more than 8 members. No address may appear more than once in the list, nor may the Account submitting the transaction appear in the list."
+        }
+      ]
+    },
+    {
+      "name": "TrustSet",
+      "description": "Create or modify a trust line linking two accounts.",
+      "reference": "https://developers.ripple.com/trustset.html",
+      "flags": "trust",
+      "fields": [
+        {
+          "name": "LimitAmount",
+          "json_type": "Object",
+          "internal_type": "Amount",
+          "required": true,
+          "description": "Object defining the trust line to create or modify, in the format of a Currency Amount."
+        },
+        {
+          "name": "LimitAmount.currency",
+          "json_type": "String",
+          "internal_type": "(Amount.currency)",
+          "required": true,
+          "description": "The currency to this trust line applies to, as a three-letter ISO 4217 Currency Code or a 160-bit hex value according to currency format. \"XRP\" is invalid."
+        },
+        {
+          "name": "LimitAmount.value",
+          "json_type": "String",
+          "internal_type": "(Amount.value)",
+          "required": true,
+          "description": "Quoted decimal representation of the limit to set on this trust line."
+        },
+        {
+          "name": "LimitAmount.issuer",
+          "json_type": "String",
+          "internal_type": "(Amount.issuer)",
+          "required": true,
+          "description": "The address of the account to extend trust to."
+        },
+        {
+          "name": "QualityIn",
+          "json_type": "Unsigned Integer",
+          "internal_type": "UInt32",
+          "required": false,
+          "description": "Value incoming balances on this trust line at the ratio of this number per 1,000,000,000 units. A value of 0 is shorthand for treating balances at face value."
+        },
+        {
+          "name": "QualityOut",
+          "json_type": "Unsigned Integer",
+          "internal_type": "UInt32",
+          "required": true,
+          "description": "Value outgoing balances on this trust line at the ratio of this number per 1,000,000,000 units. A value of 0 is shorthand for treating balances at face value."
+        }
+      ]
     }
   ]
 }
