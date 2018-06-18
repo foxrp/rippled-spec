@@ -25,11 +25,11 @@ A `validation` property will occur at either level when appropriate.
 
 Validations for field types like `Unsigned Integer` are not explicitly defined.
 
+- allow_zero: Fields may require values be within a range above 0, when also accepting 0.
+- allowed: An array of allowed values.
 - min: Minimum value allowed.
 - max: Maximum value allowed.
-- allow_zero: Sometimes allowed values will be a range above zero, however zero is also allowed.
 - regex: Regular expression for string formats.
-
 
 ### Transaction Type Level Validations
 
