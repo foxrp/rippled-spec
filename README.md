@@ -37,5 +37,13 @@ There are cases where a field is required or not allowed based on another one be
 validation comes into play.
 
 Group types:
-- `exclusive`: Only one of the fields is allowed. If `required` is set, then at least one of them is required.
 - `dependent`: If one of the fields in the group is defined, then the rest are required.
+- `exclusive`: Only one of the fields is allowed. If `required` is set, then at least one of them is required.
+- `required`: At least one of the fields are required.
+
+## Limitations
+
+There are validations (at least with Escrow) which have not yet been worked out to be defined in JSON format.
+
+For example, with `EscrowCreate`, if both `CancelAfter` and `FinishAfter` are defined, then `FinishAfter` must be before 
+`CancelAfter`.
