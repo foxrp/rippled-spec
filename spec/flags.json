@@ -56,5 +56,32 @@
       "dec": "262144",
       "description": "Only take paths where all the conversions have an input:output ratio that is equal or better than the ratio of Amount:SendMax. See Limit Quality for details."
     }
+  },
+  "trust": {
+    "tfSetfAuth": {
+      "hex": "0x00010000",
+      "dec": "65536",
+      "description": "Authorize the other party to hold issuances from this account. (No effect unless using the asfRequireAuth AccountSet flag.) Cannot be unset."
+    },
+    "tfSetNoRipple": {
+      "hex": "0x00020000",
+      "dec": "131072",
+      "description": "Blocks rippling between two trustlines of the same currency, if this flag is set on both. (See No Ripple for details.)"
+    },
+    "tfClearNoRipple": {
+      "hex": "0x00040000",
+      "dec": "262144",
+      "description": "Clears the No-Rippling flag. (See NoRipple for details.)"
+    },
+    "tfSetFreeze": {
+      "hex": "0x00100000",
+      "dec": "1048576",
+      "description": "Freeze the trustline."
+    },
+    "tfClearFreeze": {
+      "hex": "0x00200000",
+      "dec": "2097152",
+      "description": "Unfreeze the trustline."
+    }
   }
 }
